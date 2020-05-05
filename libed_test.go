@@ -9,7 +9,7 @@ import (
 
 func TestExampleNewGCMEncrypter(t *testing.T) {
 	type DataModel struct {
-		Message string
+		Message string `json:"message"`
 	}
 	req := DataModel{
 		Message: "Hi",
@@ -20,7 +20,8 @@ func TestExampleNewGCMEncrypter(t *testing.T) {
 	require.NoError(t, err)
 	t.Log(enc) // q8rBym7n5C8DRenLoRbuM9GXCbOlwvfoIwnrTFJmbmUYbX+8RzLA2uNqH8k=
 
-	denc, err := GCMDecrypter(enc, "key_secret")
+	var res DataModel
+	err = GCMDecrypter(enc, "key_secret", &res)
 	require.NoError(t, err)
-	t.Log(denc) // {"Message":"Hi"}
+	t.Log(res.Message) // Hi
 }

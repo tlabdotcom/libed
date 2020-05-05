@@ -6,6 +6,7 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"io"
 )
@@ -35,31 +36,37 @@ func GCMEncrypter(data []byte, passphrase string) (string, error) {
 }
 
 // GCMDecrypter is used to ...
-func GCMDecrypter(data, passphrase string) (interface{}, error) {
+func GCMDecrypter(data, passphrase string, res interface{}) error {
 	// Decoding from base64
 	decodedData, err := base64.StdEncoding.DecodeString(data)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	key := createHash(passphrase)
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	aesgcm, err := cipher.NewGCM(block)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	nonceSize := aesgcm.NonceSize()
 	if len(decodedData) < nonceSize {
-		return nil, fmt.Errorf("authentication failed")
+		return fmt.Errorf("authentication failed")
 	}
 	nonce, ciphertext := decodedData[:nonceSize], decodedData[nonceSize:]
 	plaintext, err := aesgcm.Open(nil, nonce, ciphertext, nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return fmt.Sprintf("%s", string(plaintext)), nil
+
+	err = json.Unmarshal(plaintext, res)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
