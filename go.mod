@@ -1,4 +1,4 @@
-module github.com/TLab-Tech-Team/libed
+module github.com/TLabTechAmazing/libed
 
 go 1.14
 
