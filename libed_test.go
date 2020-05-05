@@ -3,8 +3,6 @@ package libed
 import (
 	"encoding/json"
 	"testing"
-
-	"github.com/stretchr/testify/require"
 )
 
 func TestExampleNewGCMEncrypter(t *testing.T) {
@@ -15,13 +13,19 @@ func TestExampleNewGCMEncrypter(t *testing.T) {
 		Message: "Hi",
 	}
 	data, err := json.Marshal(req)
-	require.NoError(t, err)
+	if err != nil {
+		t.Log(err)
+	}
 	enc, err := GCMEncrypter(data, "key_secret")
-	require.NoError(t, err)
+	if err != nil {
+		t.Log(err)
+	}
 	t.Log(enc) // q8rBym7n5C8DRenLoRbuM9GXCbOlwvfoIwnrTFJmbmUYbX+8RzLA2uNqH8k=
 
 	var res DataModel
 	err = GCMDecrypter(enc, "key_secret", &res)
-	require.NoError(t, err)
+	if err != nil {
+		t.Log(err)
+	}
 	t.Log(res.Message) // Hi
 }
